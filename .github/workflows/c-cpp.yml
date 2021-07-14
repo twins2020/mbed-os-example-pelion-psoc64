@@ -1,0 +1,32 @@
+name: C/C++ CI
+pip install cysecuretools                                          # optional, if not installed before
+mbed import https://github.com/ARMmbed/mbed-os-example-blinky
+cd mbed-os-example-blinky
+cd mbed-os/targets/TARGET_Cypress/TARGET_PSOC6/TARGET_CY8CKIT064B0S2_4343W/
+cysecuretools -t cy8ckit-064b0s2-4343w init
+cysecuretools -t cy8ckit-064b0s2-4343w create-keys
+cysecuretools -t cyb06xxa -p policy/policy_single_CM0_CM4.json re-provision-device
+cd ../../../../..
+mbed compile -t GCC_ARM -m CY8CKIT064B0S2_4343W -c
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
